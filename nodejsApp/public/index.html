@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Produtos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciador de Produtos</h1>
+        <form id="productForm">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="id" required><br><br>
+            <label for="preco">Preço:</label>
+            <input type="text" id="preco" name="preco" required><br><br>
+            <label for="descricao">Descrição:</label>
+            <input type="text" id="descricao" name="descricao" required><br><br>
+            <button type="submit">Adicionar Produto</button>
+        </form>
+        <hr>
+        <form id="searchForm">
+            <label for="searchInput">Pesquisar Produto:</label>
+            <input type="text" id="searchInput" name="searchInput">
+            <select id="searchOption" name="searchOption">
+                <option value="all">Mostrar Todos</option>
+                <option value="description">Buscar por Descrição</option>
+            </select>
+            <button type="submit">Pesquisar</button>
+        </form>
+        <hr>
+        <h2>Produtos</h2>
+        <div id="productList"></div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
