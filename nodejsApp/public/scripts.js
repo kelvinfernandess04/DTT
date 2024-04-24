@@ -7,7 +7,6 @@ function renderProductList(products) {
         const productItem = document.createElement('div');
         productItem.classList.add('product-item');
         productItem.innerHTML = `
-            <p>ID: ${product.ID}</p>
             <p>Preço: ${product.Preco}</p>
             <p>Descrição: ${product.Descricao}</p>
             <button onclick="updateProduct(${product.ID})">Atualizar</button>
