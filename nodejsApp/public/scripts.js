@@ -18,7 +18,6 @@ function renderProductList(products) {
 }
 
 // Função para buscar produtos com base no termo de pesquisa
-// Função para buscar produtos com base no termo de pesquisa
 function searchProducts(searchTerm, searchOption) {
     let url = '/produtos';
     if (searchTerm) {
@@ -90,6 +89,12 @@ function updateProduct(id) {
         .catch(error => console.error('Erro ao atualizar produto:', error));
 }
 
+// Função para exibir mensagem de erro em um alerta
+function showError(message) {
+    alert(`Erro: ${message}`);
+}
+
+// Função para adicionar um produto
 document.getElementById('productForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -105,11 +110,19 @@ document.getElementById('productForm').addEventListener('submit', function (even
                 alert('Produto adicionado com sucesso!');
                 searchProducts(''); // Recarrega a lista de produtos após a adição
             } else {
-                throw new Error('Erro ao adicionar produto');
+                return response.json(); // Retorna o corpo da resposta como JSON
+            }
+        })
+        .then(data => {
+            if (data && data.errors) {
+                const errorMessage = data.errors.map(error => error.msg).join(', ');
+                showError(errorMessage); // Exibe os erros em um alerta
             }
         })
         .catch(error => console.error('Erro ao adicionar produto:', error));
 });
+
+
 
 document.getElementById('searchForm').addEventListener('submit', function (event) {
     event.preventDefault();

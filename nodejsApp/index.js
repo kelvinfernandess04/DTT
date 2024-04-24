@@ -37,19 +37,22 @@ const validateInput = (req, res, next) => {
 
 // Rota para criar um produto
 app.post('/produto', [
-    body('id').isInt().notEmpty(),
-    body('preco').isDecimal().notEmpty(),
+    body('preco').custom((value) => {
+        if (!/^\d+(\.\d+)?$/.test(value.replace(',', '.'))) {
+            throw new Error('O preço deve ser um número válido.');
+        }
+        return true;
+    }),
     body('descricao').isLength({ min: 1 }).notEmpty(),
     validateInput
 ], async (req, res) => {
-    const { id, preco, descricao } = req.body;
+    const { preco, descricao } = req.body;
     try {
         await sql.connect(config);
         const request = new sql.Request();
-        request.input('id', sql.Int, id);
-        request.input('preco', sql.Decimal(10, 2), preco);
+        request.input('preco', sql.Decimal(10, 2), preco.replace(',', '.')); // Substituir vírgula por ponto
         request.input('descricao', sql.NVarChar(255), descricao);
-        const result = await request.query('INSERT INTO Produtos (ID, Preco, Descricao) VALUES (@id, @preco, @descricao)');
+        const result = await request.query('INSERT INTO Produtos (Preco, Descricao) VALUES (@preco, @descricao)');
         res.send('Produto criado com sucesso!');
         console.log(result);
     } catch (err) {
