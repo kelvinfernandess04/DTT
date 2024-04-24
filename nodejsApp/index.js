@@ -1,5 +1,7 @@
 const express = require('express');
 const sql = require('mssql');
+const { escape } = require('html-escaper'); // Biblioteca para escapar caracteres especiais
+const { body, validationResult } = require('express-validator'); // Biblioteca para validação de entrada
 const app = express();
 const port = 3000;
 
@@ -24,18 +26,23 @@ app.use(express.json());
 // Middleware para servir arquivos estáticos
 app.use(express.static(__dirname + '/public'));
 
+// Middleware para validação de entrada nos endpoints
+const validateInput = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+};
 
 // Rota para criar um produto
-app.post('/produto', async (req, res) => {
+app.post('/produto', [
+    body('id').isInt().notEmpty(),
+    body('preco').isDecimal().notEmpty(),
+    body('descricao').isLength({ min: 1 }).notEmpty(),
+    validateInput
+], async (req, res) => {
     const { id, preco, descricao } = req.body;
-    // Validação de entrada
-    if (!id || !preco || !descricao) {
-        return res.status(400).send('Todos os campos são obrigatórios.');
-    }
-    // Validação adicional, por exemplo, verificar se 'preco' é um número válido
-    if (isNaN(parseFloat(preco)) || !isFinite(preco)) {
-        return res.status(400).send('O preço deve ser um número válido.');
-    }
     try {
         await sql.connect(config);
         const request = new sql.Request();
@@ -43,7 +50,6 @@ app.post('/produto', async (req, res) => {
         request.input('preco', sql.Decimal(10, 2), preco);
         request.input('descricao', sql.NVarChar(255), descricao);
         const result = await request.query('INSERT INTO Produtos (ID, Preco, Descricao) VALUES (@id, @preco, @descricao)');
-        res.setHeader('Content-Security-Policy-Report-Only', "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'");
         res.send('Produto criado com sucesso!');
         console.log(result);
     } catch (err) {
@@ -67,7 +73,7 @@ app.get('/produtos', async (req, res) => {
 
 // Rota para buscar produtos por descrição
 app.get('/produtos/descricao/:descricao', async (req, res) => {
-    const descricao = req.params.descricao;
+    const descricao = escape(req.params.descricao); // Escapando os dados de entrada
     try {
         await sql.connect(config);
         const request = new sql.Request();
@@ -81,17 +87,13 @@ app.get('/produtos/descricao/:descricao', async (req, res) => {
 });
 
 // Rota para atualizar um produto por ID
-app.put('/produto/:id', async (req, res) => {
+app.put('/produto/:id', [
+    body('preco').isDecimal().notEmpty(),
+    body('descricao').isLength({ min: 1 }).notEmpty(),
+    validateInput
+], async (req, res) => {
     const id = req.params.id;
     const { preco, descricao } = req.body;
-    // Validação de entrada
-    if (!preco || !descricao) {
-        return res.status(400).send('Todos os campos são obrigatórios.');
-    }
-    // Validação adicional, por exemplo, verificar se 'preco' é um número válido
-    if (isNaN(parseFloat(preco)) || !isFinite(preco)) {
-        return res.status(400).send('O preço deve ser um número válido.');
-    }
     try {
         await sql.connect(config);
         const request = new sql.Request();
@@ -115,12 +117,12 @@ app.delete('/produto/:id', async (req, res) => {
         request.input('id', sql.Int, id);
         const result = await request.query('DELETE FROM Produtos WHERE ID = @id');
         res.send('Produto deletado com sucesso!');
+
     } catch (err) {
         console.error('Erro ao deletar produto:', err);
         res.status(500).send('Erro ao deletar produto. Por favor, tente novamente mais tarde.');
     }
 });
-
 
 // Inicializa o servidor
 app.listen(port, () => {
