@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: ${MSSQL_PASSWORD}
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+
+  nodejsapp:
+    build:
+      context: .
+      dockerfile: index.dockerfile
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    environment:
+      MSSQL_PASSWORD: ${MSSQL_PASSWORD}
