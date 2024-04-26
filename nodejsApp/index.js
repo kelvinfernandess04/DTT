@@ -13,8 +13,9 @@ if (!password) {
 
 const config = {
     user: 'sa',
-    server: 'localhost',
+    server: '192.168.0.20',
     password: password,
+    port: 5433, // Propriedade separada para a porta
     database: 'DTT',
     options: {
         encrypt: false, // Desativar criptografia (apenas para SQL Server local)

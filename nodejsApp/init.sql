@@ -1,7 +1,8 @@
 -- Arquivo contendo os comandos para a criação do banco de dados.
 
-CREATE DATABASE DTT
-USE DTT
+CREATE DATABASE DTT;
+GO
+USE DTT;
 CREATE TABLE Produtos
 (
     ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -18,5 +19,5 @@ VALUES
 
 
 SELECT *
-FROM Produtos
+FROM Produtos;
 
