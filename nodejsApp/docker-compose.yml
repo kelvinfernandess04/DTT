@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   nodejsapp:
+    image: kelvinfernandess04/nodejsapp:latest
     build:
       context: .
       dockerfile: app.dockerfile
@@ -13,6 +14,7 @@ services:
       MSSQL_PASSWORD: ${MSSQL_PASSWORD}
 
   mssql:
+    image: kelvinfernandess04/mssql:latest
     build:
       context: .
       dockerfile: mssql.dockerfile
