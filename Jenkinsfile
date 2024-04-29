@@ -11,13 +11,13 @@ pipeline {
         }
         stage('Checkout'){
             steps{
-                withCredentials([string(credentialsId: 'secret-github', variable: 'sc-github-var')]){
-                    git branch: 'main', url:'https://${sc-github-var}@github.com/kelvinfernandess04/DTT' 
+                //withCredentials([string(credentialsId: 'secret-github', variable: 'sc-github-var')]){
+                    git branch: 'main', url:'https://github.com/kelvinfernandess04/DTT' 
                     script{
                         sh 'ls -la'
                     }
                     stash includes:'**/*', name:'DTT'
-                }
+                //}
             }
         }
         stage('Build') {
