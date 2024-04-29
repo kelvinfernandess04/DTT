@@ -42,8 +42,8 @@ pipeline {
                     sh 'docker compose -f docker-compose.yml build'
                     sh 'docker images'
                     sh 'docker login -u"${DOCKER_LOGIN_USR}" -p"${DOCKER_LOGIN_PSW}" docker.io'
-                    sh 'docker image push  kelvinfernandess04/mssql'
-                    sh 'docker image push kelvinfernandess04/nodejsapp'
+                    sh 'docker image push  DOCKER_LOGIN_USR/mssql'
+                    sh 'docker image push DOCKER_LOGIN_USR/nodejsapp'
                 }
                 stash includes:'**/*', name:'DTT'
             }
