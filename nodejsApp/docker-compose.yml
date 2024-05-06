@@ -21,5 +21,21 @@ services:
     environment:
       - ACCEPT_EULA=Y
      # - MSSQL_PASSWORD=${MSSQL_PASSWORD}
+    volumes:
+      - type: volume
+        source: mssql_data
+        target: /var/opt/mssql/data
+      - type: volume
+        source: mssql_log
+        target: /var/opt/mssql/log
+      - type: volume
+        source: mssql_secrets
+        target: /var/opt/mssql/secrets
     ports:
       - "5433:1433"
+    
+volumes:
+  mssql_data:
+  mssql_log:
+  mssql_secrets:
+

@@ -1,6 +1,10 @@
 # Use a imagem oficial do SQL Server para Docker
 FROM mcr.microsoft.com/mssql/server:2019-latest
 
+RUN mkdir /var/opt/mssql/data && chown 10001 /var/opt/mssql/data
+RUN mkdir /var/opt/mssql/log && chown 10001 /var/opt/mssql/log
+RUN mkdir /var/opt/mssql/secrets && chown 10001 /var/opt/mssql/secrets
+
 # Defina a variável de ambiente da senha do SQL Server
 ENV MSSQL_SA_PASSWORD="Kelvin 2004"
 RUN echo $MSSQL_PASSWORD
