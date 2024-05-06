@@ -11,13 +11,13 @@ pipeline {
         }
         stage('Checkout'){
             steps{
-                //withCredentials([string(credentialsId: 'secret-github', variable: 'sc-github-var')]){
-                    git branch: 'main', url:'https://github.com/kelvinfernandess04/DTT' 
+                withCredentials([string(credentialsId: 'secret-github', variable: 'sc-github-var')]){
+                    git branch: 'main', url:'https://${sc-github-var}@github.com/kelvinfernandess04/DTT' 
                     script{
                         sh 'ls -la'
                     }
                     stash includes:'**/*', name:'DTT'
-                //}
+                }
             }
         }
         stage('Build') {
@@ -30,7 +30,30 @@ pipeline {
                     }
                 }
             }
-            
+        }
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                    scannerHome = tool 'sonar_scanner'// must match the name of an actual scanner installation directory on your Jenkins build agent
+                }
+                withSonarQubeEnv('sonarqube_docker') {// If you have configured more than one global server connection, you can specify its name as configured in Jenkins
+                 sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
+        stage('Horusec') {
+            agent {
+                docker { 
+                    image 'horuszup/horusec-cli:latest' 
+                    args '-v ${WORKSPACE}:/src/horusec'
+                }
+            }
+            steps {
+                sh 'horusec start -D true -p /src/horusec'
+                sh 'horusec version'
+                sh 'ls /src/horusec'
+                //sh 'horusec start -p="./" -e="true"'
+            }
         }
         stage('docker build'){
             environment{
@@ -42,10 +65,8 @@ pipeline {
                     sh 'docker compose -f docker-compose.yml build'
                     sh 'docker images'
                     sh 'docker login -u"${DOCKER_LOGIN_USR}" -p"${DOCKER_LOGIN_PSW}" docker.io'
-                    sh 'docker tag kelvinfernandess04/nodejsapp ${DOCKER_LOGIN_USR}/nodejsapp'
-                    sh 'docker tag kelvinfernandess04/mssql ${DOCKER_LOGIN_USR}/mssql'
-                    sh 'docker image push ${DOCKER_LOGIN_USR}/mssql'
-                    sh 'docker image push ${DOCKER_LOGIN_USR}/nodejsapp'
+                    sh 'docker image push  kelvinfernandess04/mssql'
+                    sh 'docker image push kelvinfernandess04/nodejsapp'
                 }
                 stash includes:'**/*', name:'DTT'
             }
