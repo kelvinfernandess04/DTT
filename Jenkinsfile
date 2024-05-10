@@ -41,7 +41,7 @@ pipeline {
                 }
                 withSonarQubeEnv('sonarqube_docker') {// If you have configured more than one global server connection, you can specify its name as configured in Jenkins
                     sh "${scannerHome}/bin/sonar-scanner"
-                    sh 'docker context sh'
+                    sh 'docker context ls'
                 }
             }
         }
