@@ -49,7 +49,7 @@ pipeline {
             agent {
                 docker { 
                     image 'horuszup/horusec-cli:latest' 
-                    args '-v ${WORKSPACE}:/src/horusec'
+                    args '-v ${WORKSPACE}:/src/horusec --entrypoint=""'
                 }
             }
             steps {
