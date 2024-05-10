@@ -47,8 +47,8 @@ pipeline {
         }
         stage('Horusec') {
             environment {
-                JOB_DIR = ${WORKSPACE}
-                JOB_NAME = ${env.JOB_NAME}
+                JOB_DIR = "${WORKSPACE}"
+                JOB_NAME = "${env.JOB_NAME}"
             }
             agent {
                 docker { 
@@ -57,7 +57,7 @@ pipeline {
                 }
             }
             steps {
-		        sh 'ln -s ${JOB_DIR} /tmp/${JOB_NAME}'
+		        sh 'ln -s ${JOB_DIR}/tmp/${JOB_NAME}'
                 sh 'horusec version'
                 sh 'ls /src/horusec'
                 sh 'horusec start -D true -p /src/horusec'
