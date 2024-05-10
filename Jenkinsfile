@@ -63,16 +63,15 @@ pipeline {
             steps {
                 script {
                     // Define o diretório onde o Dependency-Check será executado e onde os relatórios serão armazenados
-                    def dcDirectory = "${WORKSPACE}/OWASP-Dependency-Check"
+                    def dcDirectory = "/var/tools/OWASP-Dependency-Check"
                     def dataDirectory = "${dcDirectory}/data"
                     def cacheDirectory = "${dataDirectory}/cache"
                     
                     // Cria os diretórios se eles não existirem
                     sh "mkdir -p ${dataDirectory}"
                     sh "mkdir -p ${cacheDirectory}"
-                    sh "mkdir -p ${WORKSPACE}/OWASP-Dependency-Check/odc-reports"
-                    sh "chmod 777 ${WORKSPACE}/OWASP-Dependency-Check/odc-reports"
-                    sh "chmod 777 ${dataDirectory}"
+                    sh "mkdir -p ${WORKSPACE}/reports"
+                    sh "chmod 777 ${WORKSPACE}/reports"
                     
                     // Baixa a imagem do Docker do Dependency-Check
                     sh "docker pull owasp/dependency-check:latest"
@@ -81,7 +80,7 @@ pipeline {
                     sh "docker run --rm \
                         -v ${WORKSPACE}:/src:z \
                         -v ${dataDirectory}:/usr/share/dependency-check/data:z \
-                        -v ${WORKSPACE}/OWASP-Dependency-Check/odc-reports:/report:z \
+                        -v ${WORKSPACE}/reports:/report:z \
                         owasp/dependency-check:latest \
                         --scan /src \
                         --format 'ALL' \
