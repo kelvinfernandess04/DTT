@@ -54,7 +54,6 @@ pipeline {
             }
             steps {
 		sh 'horusec version'
-                sh 'ls /src/horusec'
                 sh 'horusec start -D true -p /src/horusec'
                 //sh 'horusec start -p="./" -e="true"'
             }
