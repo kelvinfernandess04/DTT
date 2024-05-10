@@ -46,16 +46,21 @@ pipeline {
             }
         }
         stage('Horusec') {
+            environment {
+                JOB_DIR = ${WORKSPACE}
+                JOB_NAME = ${env.JOB_NAME}
+            }
             agent {
                 docker { 
                     image 'horuszup/horusec-cli:latest' 
-                    args '-v ${WORKSPACE}:/src/horusec --entrypoint=""'
+                    args '-v /tmp/${env.JOB_NAME}:/src/horusec --entrypoint="" -e JOB_DIR=${JOB_DIR}'
                 }
             }
             steps {
-                sh 'horusec start -D true -p /src/horusec'
+		        sh 'ln -s ${JOB_DIR} /tmp/${JOB_NAME}'
                 sh 'horusec version'
                 sh 'ls /src/horusec'
+                sh 'horusec start -D true -p /src/horusec'
                 //sh 'horusec start -p="./" -e="true"'
             }
         }
