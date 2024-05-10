@@ -3,6 +3,9 @@ pipeline {
     tools{
         nodejs "nodejs-22"
     }
+    enviroment{
+        DOCKER_HOST = credentials('docker_context')
+    }
     stages {
         stage('Hello') {
             steps {
