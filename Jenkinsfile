@@ -53,7 +53,7 @@ pipeline {
             agent {
                 docker { 
                     image 'horuszup/horusec-cli:latest' 
-                    args '-v /tmp/${env.JOB_NAME}:/src/horusec --entrypoint="" -e JOB_DIR=${JOB_DIR}'
+                    args '-v /tmp/${env.JOB_NAME}:/src/horusec --entrypoint="" -e JOB_DIR=${JOB_DIR} -e JOB_NAME=${JOB_NAME}'
                 }
             }
             steps {
