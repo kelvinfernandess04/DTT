@@ -12,7 +12,7 @@ if (!password) {
 
 const config = {
     user: 'sa',
-    server: 'kubernetes.docker.internal',
+    server: '172.23.156.30',
     password: password,
     port: 5433, // Propriedade separada para a porta
     database: 'DTT',
