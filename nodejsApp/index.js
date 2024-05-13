@@ -4,7 +4,6 @@ const { escape } = require('html-escaper'); // Biblioteca para escapar caractere
 const { body, validationResult } = require('express-validator'); // Biblioteca para validação de entrada
 const app = express();
 const port = 3000;
-https://github.com/kelvinfernandess04/DTT/edit/main/nodejsApp/index.js
 // Configurar conexão com o banco de dados
 const password = process.env.MSSQL_PASSWORD;
 if (!password) {
