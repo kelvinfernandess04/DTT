@@ -13,7 +13,7 @@ if (!password) {
 
 const config = {
     user: 'sa',
-    server: '192.168.0.20',
+    server: 'localhost:5433',
     password: password,
     port: 5433, // Propriedade separada para a porta
     database: 'DTT',
