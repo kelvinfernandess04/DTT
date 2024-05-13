@@ -12,6 +12,7 @@ services:
       - mssql
     environment:
       MSSQL_PASSWORD: ${MSSQL_PASSWORD}
+      IP_WSL: ${IP_WSL}
 
   mssql:
     image: kelvinfernandess04/mssql:latest
