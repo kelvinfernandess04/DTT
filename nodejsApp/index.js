@@ -12,7 +12,7 @@ if (!password) {
 
 const config = {
     user: 'sa',
-    server: '172.23.156.30',
+    server: process.env.IP_WSL,
     password: password,
     port: 5433, // Propriedade separada para a porta
     database: 'DTT',
