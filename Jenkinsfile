@@ -47,9 +47,10 @@ pipeline {
         }
         stage('Create Reports Folder') {
             steps {
+                sh "rm -rf ${WORKSPACE}/reports/*"
                 sh "mkdir -p ${WORKSPACE}/reports"
                 sh "chmod 777 ${WORKSPACE}/reports"
-                sh "rm -rf ${WORKSPACE}/reports/*"
+               
             }
         }
         stage('Horusec') {
