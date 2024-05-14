@@ -20,6 +20,7 @@ const config = {
         encrypt: false, // Desativar criptografia (apenas para SQL Server local)
     },
 };
+console.log(config);
 
 // Middleware para lidar com o corpo da requisição JSON
 app.use(express.json());
