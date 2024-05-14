@@ -5,7 +5,6 @@ pipeline {
     }
     environment{
         DOCKER_HOST_2 = credentials('docker_context')
-        WORKSPACE_CODE = "${WORKSPACE}"
     }
     stages {
         stage('Hello') {
@@ -16,7 +15,7 @@ pipeline {
         stage('Checkout'){
             steps{
                 //withCredentials([string(credentialsId: 'secret-github', variable: 'sc-github-var')]){
-                    git branch: 'main', url:'https://${sc-github-var}@github.com/kelvinfernandess04/DTT' 
+                    git branch: 'main', url:'https://github.com/kelvinfernandess04/DTT' 
                     script{
                         sh 'ls -la'
                     }
@@ -46,14 +45,11 @@ pipeline {
                 }
             }
         }
-        stage('Check Status') {
+        stage('Create Reports Folder') {
             steps {
-                sh 'ls -la'
-                sh 'pwd'
-                sh 'id'
-                sh 'echo ${WORKSPACE}'
                 sh "mkdir -p ${WORKSPACE}/reports"
                 sh "chmod 777 ${WORKSPACE}/reports"
+                sh "rm -rf ${WORKSPACE}/reports/*"
             }
         }
         stage('Horusec') {
@@ -66,28 +62,13 @@ pipeline {
             }
             steps {
                 dir("${WORKSPACE}") {
-                    sh 'echo WORKSPACE Horusec: ${WORKSPACE_CODE}'
-		            sh 'horusec version'
-		            sh 'id'
-		            //sh 'ls -la /src/horusec'
-                    //sh 'horusec start -D true -p /src/horusec'
                     sh 'horusec start -p . --output-format json --json-output-file reports/horusec-report.json'
-                    //sh 'horusec start -p="./" -e="true"'
                 }
             }
         }
         stage('dependency-check') {
             steps {
                 script {
-                    // Define o diretório onde o Dependency-Check será executado e onde os relatórios serão armazenados
-                    //def dcDirectory = "/var/tools/OWASP-Dependency-Check"
-                    //def dataDirectory = "${dcDirectory}/data"
-                    //def cacheDirectory = "${dataDirectory}/cache"
-                    // Cria os diretórios se eles não existirem
-                    //sh "mkdir -p ${dataDirectory}"
-                    //sh "mkdir -p ${cacheDirectory}"
-                    //sh "mkdir -p ${WORKSPACE}/reports"
-                    //sh "chmod 777 ${WORKSPACE}/reports"
                     // Baixa a imagem do Docker do Dependency-Check
                     sh "docker pull owasp/dependency-check:latest"
                     // Executa o Dependency-Check
@@ -99,9 +80,6 @@ pipeline {
                         --format 'ALL' \
                         --out ${WORKSPACE}/reports \
                         --data /usr/share/dependency-check/data/dependency-check"
-                    //sh "docker run --rm \
-                        //owasp/dependency-check:latest \
-                        //--version"
                 }
             }
         }
@@ -109,34 +87,37 @@ pipeline {
         stage('docker build'){
             environment{
                 DOCKER_LOGIN = credentials('docker-credentials')
+                IP_WSL = credentials('ip_wsl')
+                MSSQL_PASSWORD='${MSSQL_PASSWORD}'
             }
             steps{
                 unstash 'DTT'
                 dir('nodejsApp'){
-                    sh 'docker compose -f docker-compose.yml build'
+                    sh 'docker compose -f docker-compose.yml down'
+                    sh 'docker compose -f docker-compose.yml build --no-cache'
                     sh 'docker images'
                     sh 'docker login -u"${DOCKER_LOGIN_USR}" -p"${DOCKER_LOGIN_PSW}" docker.io'
-                    sh 'docker image tag kelvinfernandess04/mssql ${DOCKER_LOGIN_USR}/mssql'
-                    sh 'docker image tag kelvinfernandess04/nodejsapp ${DOCKER_LOGIN_USR}/nodejsapp'
-                    sh 'docker image push  ${DOCKER_LOGIN_USR}/mssql'
+                    sh 'docker image push ${DOCKER_LOGIN_USR}/mssql'
                     sh 'docker image push ${DOCKER_LOGIN_USR}/nodejsapp'
-                    sh 'docker image rm kelvinfernandess04/mssql'
-                    sh 'docker image rm kelvinfernandess04/nodejsapp'
                 }
                 stash includes:'**/*', name:'DTT'
             }
         }
         stage('Trivy') {
+            environment{
+                DOCKER_LOGIN = credentials('docker-credentials')
+            }
             steps {
                 script {
                     sh 'curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.51.1'
-                    sh 'trivy image kelvinfernandess04/mssql'
-                    sh 'trivy image kelvinfernandess04/nodejsapp'
+                    sh 'trivy image ${DOCKER_LOGIN_USR}/mssql'
+                    sh 'trivy image ${DOCKER_LOGIN_USR}/nodejsapp'
                 }
             }
         }
         stage('Run'){
             environment{
+                DOCKER_LOGIN = credentials('docker-credentials')
                 MSSQL_PASSWORD="Kelvin 2004"
                 IP_WSL = credentials('ip_wsl')
             }
