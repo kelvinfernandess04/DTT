@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nodejsapp:
-    image: kelvinfernandess04/nodejsapp:latest
+    image: ${DOCKER_LOGIN_USR}/nodejsapp:latest
     build:
       context: .
       dockerfile: app.dockerfile
@@ -15,7 +15,7 @@ services:
       IP_WSL: ${IP_WSL}
 
   mssql:
-    image: kelvinfernandess04/mssql:latest
+    image: ${DOCKER_LOGIN_USR}/mssql:latest
     build:
       context: .
       dockerfile: mssql.dockerfile
