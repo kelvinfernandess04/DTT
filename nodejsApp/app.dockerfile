@@ -11,7 +11,7 @@ ENV MSSQL_SA_PASSWORD=${MSSQL_PASSWORD}
 RUN npm install
 
 COPY . .
-
+RUN cat index.js
 EXPOSE 3000
 
 CMD ["node", "index.js"]
